@@ -10,6 +10,18 @@ import { getTodosForUser as getTodosForUser } from '../../businessLogic/todos'
 // utils
 import { getUserId } from '../utils';
 
+const docClient = new AWS.DynamoDB.DocumentClient()
+
+const result = await docClient.query({
+  TableName: 'GameScore',
+  KeyConditionExpression: 'GameId = :gameId',
+  ExpressionAttributeValues: {
+    ':gameId': '10'
+  }
+}).promise()
+
+const items = result.Items
+
 // TODO: Get all TODO items for a current user
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
