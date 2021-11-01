@@ -4,7 +4,7 @@ const AWSXRay = require('aws-xray-sdk');
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
 // utils
-import { createLogger } from '../utils/logger';
+// import { createLogger } from '../utils/logger';
 
 // models
 import { TodoItem } from '../models/TodoItem'
@@ -12,11 +12,10 @@ import { TodoUpdate } from '../models/TodoUpdate';
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-const logger = createLogger('TodosAccess')
+// const logger = createLogger('TodosAccess')
 
 // TODO: Implement the dataLayer logic
-
-export class TodoAccess {
+export class TodosAccess {
   /**
    * Constructor
    * @param docClient 
@@ -56,7 +55,23 @@ export class TodoAccess {
    * @returns 
    */
   async updateTodo(update: TodoUpdate): Promise<TodoItem> {
+    await this.docClient.update({
+      TableName: this.todosTable,
+      Key: {
+      }
+    })
     return;
+  }
+
+  async deleteTodo(todoId: string): Promise<any> {
+    await this.docClient.delete({
+      TableName: this.todosTable,
+      Key: {
+        todoId
+      }
+    }).promise();
+
+    return todoId;
   }
 }
 
