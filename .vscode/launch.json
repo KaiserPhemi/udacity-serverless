@@ -3,6 +3,21 @@
     {
       "type": "aws-sam",
       "request": "direct-invoke",
+      "name": "backend:src/helpers/todos.setAttachmentUrl (nodejs12.x)",
+      "invokeTarget": {
+        "target": "code",
+        "projectRoot": "${workspaceFolder}/backend",
+        "lambdaHandler": "src/helpers/todos.setAttachmentUrl"
+      },
+      "lambda": {
+        "runtime": "nodejs12.x",
+        "payload": {},
+        "environmentVariables": {}
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
       "name": "backend:src/helpers/todos.updateTodo (nodejs12.x)",
       "invokeTarget": {
         "target": "code",
