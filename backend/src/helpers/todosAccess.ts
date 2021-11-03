@@ -54,10 +54,12 @@ export class TodosAccess {
    * @param update 
    * @returns 
    */
-  async updateTodo(update: TodoUpdate): Promise<TodoItem> {
+  async updateTodo(userId: string, update: TodoUpdate): Promise<TodoItem> {
     await this.docClient.update({
       TableName: this.todosTable,
       Key: {
+        userId,
+        name: update.name
       }
     })
     return;
@@ -70,7 +72,6 @@ export class TodosAccess {
         todoId
       }
     }).promise();
-
     return todoId;
   }
 }
