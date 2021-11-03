@@ -7,6 +7,8 @@ plugins:
   - serverless-plugin-tracing
   - serverless-reqvalidator-plugin
 
+configValidationMode: off
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -24,10 +26,9 @@ provider:
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: serverless-c4-todo-images-${self:provider.stage}
+    ATTACHMENT_S3_BUCKET: phemi-serverless-todo-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
     AUTH0_SECRET: zlX1NrbYaSR0p4VlCvQCSBEeAFb_pbzQ-AqKhe1z7tVutETJJMBhv1na2cQhE84u
-
   logs:
     # Enable API Gateway logs
     restApi: true
@@ -45,6 +46,7 @@ provider:
             - dynamodb:Scan
             - dynamodb:PutItem
             - dynamodb:GetItem
+            - dynamodb:DeleteItem
           Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
 functions:
@@ -61,6 +63,8 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
+          reqValidatorName: 
+
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
@@ -77,9 +81,6 @@ functions:
           request:
             schemas:
               application/json: ${file(models/create-todo-model.json)}
-          documentation:
-            summary: Create a new todo
-            description: Create a new todo
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements, and request schemas
@@ -89,6 +90,8 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+          cors: true
+          authorizer: Auth
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
@@ -98,6 +101,8 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+          cors: true
+          authorizer: Auth
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
@@ -107,6 +112,8 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
+          cors: true
+          authorizer: Auth
 
 resources:
   Resources:
