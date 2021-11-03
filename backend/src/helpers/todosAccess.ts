@@ -23,18 +23,45 @@ export class TodosAccess {
    */
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly todosTable = process.env.TODOS_TABLE
+    private readonly todosTable = process.env.TODOS_TABLE,
+    private readonly indexName = process.env.TODOS_CREATED_AT_INDEX
+
   ) { }
 
   /**
-   * Fetches all todos
+   * Fetches all todos for a user
+   * @param userId
+   * @returns
    */
-  async getAllTodos(): Promise<TodoItem[]> {
-    const result = await this.docClient.scan({
-      TableName: this.todosTable
+  async getAllTodos(userId: string): Promise<TodoItem[]> {
+    const result = await this.docClient.query({
+      TableName: this.todosTable,
+      IndexName: this.indexName,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      }
     }).promise()
     const items = result.Items;
     return items as TodoItem[]
+  }
+
+  /**
+   * Fetch a single todo
+   * @param todoId 
+   * @returns 
+   */
+  async getTodo(todoId: string): Promise<TodoItem> {
+    const result = await this.docClient.query({
+      TableName: this.todosTable,
+      KeyConditionExpression: 'todoId = :todoId',
+      ExpressionAttributeValues: {
+        ':todoId': todoId
+      }
+    }).promise()
+
+    const item = result.Items[0];
+    return item as TodoItem;
   }
 
   /**
@@ -54,18 +81,28 @@ export class TodosAccess {
    * @param update 
    * @returns 
    */
-  async updateTodo(userId: string, update: TodoUpdate): Promise<TodoItem> {
+  async updateTodo(todoId: string, update: TodoUpdate): Promise<TodoUpdate> {
     await this.docClient.update({
       TableName: this.todosTable,
       Key: {
-        userId,
-        name: update.name
-      }
-    })
-    return;
+        todoId
+      },
+      UpdateExpression: `set name = :n, dueDate= :d, done=:done`,
+      ExpressionAttributeValues: {
+        ':n': update.name,
+        ':d': update.dueDate,
+        ':done': update.done
+      },
+    }).promise();
+    return update;
   }
 
-  async deleteTodo(todoId: string): Promise<any> {
+  /**
+   * Deletes a todo
+   * @param todoId 
+   * @returns 
+   */
+  async deleteTodo(todoId: string): Promise<string> {
     await this.docClient.delete({
       TableName: this.todosTable,
       Key: {
@@ -73,6 +110,27 @@ export class TodosAccess {
       }
     }).promise();
     return todoId;
+  }
+
+  /**
+   * Sets the attachement url for a todo
+   * @param todoId 
+   * @param attachmentUrl 
+   */
+  public async setAttachmentUrl(
+    todoId: string,
+    attachmentUrl: string,
+  ): Promise<void> {
+    this.docClient
+      .update({
+        TableName: this.todosTable,
+        Key: { todoId },
+        UpdateExpression: 'set attachmentUrl = :attachmentUrl',
+        ExpressionAttributeValues: {
+          ':attachmentUrl': attachmentUrl,
+        },
+        ReturnValues: 'UPDATED_NEW',
+      }).promise();
   }
 }
 

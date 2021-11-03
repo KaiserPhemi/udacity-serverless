@@ -8,12 +8,13 @@ import { TodosAccess } from './todosAccess';
 // models
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest';
+import { TodoUpdate } from '../models/TodoUpdate';
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 
 // utils
 import { createLogger } from '../utils/logger';
-// import { AttachmentUtils } from './attachmentUtils';
 import { parseUserId } from '../auth/utils';
+// import { AttachmentUtils } from './attachmentUtils';
 
 // TODO: Implement businessLogic
 const todoAccess = new TodosAccess();
@@ -23,9 +24,9 @@ const logger = createLogger('todo');
  * Fetch all todos
  * @returns 
  */
-export async function getAllTodos(): Promise<TodoItem[]> {
+export async function getAllTodos(userId: string): Promise<TodoItem[]> {
   logger.info('Fetching all todos');
-  return todoAccess.getAllTodos();
+  return todoAccess.getAllTodos(userId);
 }
 
 /**
@@ -52,16 +53,15 @@ export async function createTodo(
 
 /**
  * Updates a todo item
+ * @param todoId
  * @param updateTodoRequest
- * @param jwtToken
  * @returns
  */
 export async function updateTodo(
+  todoId: string,
   updateTodoRequest: UpdateTodoRequest,
-  jwtToken: string
-) {
-  const userId = parseUserId(jwtToken)
-  return await todoAccess.updateTodo(userId, updateTodoRequest);
+): Promise<TodoUpdate> {
+  return await todoAccess.updateTodo(todoId, updateTodoRequest);
 }
 
 /**
@@ -69,6 +69,18 @@ export async function updateTodo(
  * @param todoId 
  * @returns 
  */
-export async function deleteTodo(todoId: string) {
+export async function deleteTodo(todoId: string): Promise<string> {
   return await todoAccess.deleteTodo(todoId)
+}
+
+/**
+ * Sets the attachment URL
+ * @param todoId 
+ * @param attachmentUrl 
+ */
+export async function setAttachmentUrl(
+  todoId: string,
+  attachmentUrl: string,
+): Promise<void> {
+  todoAccess.setAttachmentUrl(todoId, attachmentUrl);
 }

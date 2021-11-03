@@ -1,31 +1,46 @@
 // third-party libraries
 import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as middy from 'middy'
-import { cors, httpErrorHandler } from 'middy/middlewares'
-
-// import { createAttachmentPresignedUrl } from '../../businessLogic/todos'
+import * as middy from 'middy';
+import * as uuid from 'uuid';
+import { cors, httpErrorHandler } from 'middy/middlewares';
 
 // utils
 import { presignedUrl } from '../../helpers/attachmentUtils';
-// import { getUserId } from '../utils'
+import { setAttachmentUrl } from '../../helpers/todos';
 
+const bucketName = process.env.IMAGES_S3_BUCKET;
 
 // handler
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
     // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
-    const uploadUrl = presignedUrl(todoId);
+    try {
+      const imageId = uuid.v4();
+      const uploadUrl = presignedUrl(imageId);
+      const attachURL = `https://${bucketName}.s3.amazonaws.com/${imageId}`
+      await setAttachmentUrl(todoId, attachURL);
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        url: uploadUrl
-      })
+      return {
+        statusCode: 201,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true
+        },
+        body: JSON.stringify({ uploadUrl })
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true
+        },
+        body: JSON.stringify({
+          error,
+        }),
+      };
     }
   }
 );

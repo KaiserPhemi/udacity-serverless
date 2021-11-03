@@ -11,13 +11,13 @@ const s3 = new XAWS.S3({
 
 /**
  * Create an upload url
- * @param todoId 
+ * @param imageId
  * @returns 
  */
-export const presignedUrl = (todoId: string) => {
+export const presignedUrl = (imageId: string) => {
   return s3.getSignedUrl('putObject', {
     Bucket: process.env.ATTACHMENT_S3_BUCKET,
-    Key: todoId,
+    Key: imageId,
     Expires: process.env.SIGNED_URL_EXPIRATION
   })
 }
