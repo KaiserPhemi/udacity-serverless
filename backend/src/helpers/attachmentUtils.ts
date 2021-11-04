@@ -18,6 +18,6 @@ export const presignedUrl = (imageId: string) => {
   return s3.getSignedUrl('putObject', {
     Bucket: process.env.ATTACHMENT_S3_BUCKET,
     Key: imageId,
-    Expires: process.env.SIGNED_URL_EXPIRATION
+    Expires: parseInt(process.env.SIGNED_URL_EXPIRATION)
   })
 }

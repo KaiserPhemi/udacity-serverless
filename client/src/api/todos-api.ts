@@ -6,7 +6,6 @@ import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
 
 export async function getTodos(idToken: string): Promise<Todo[]> {
   console.log('Fetching todos')
-
   const response = await Axios.get(`${apiEndpoint}/todos`, {
     headers: {
       'Content-Type': 'application/json',
@@ -14,7 +13,7 @@ export async function getTodos(idToken: string): Promise<Todo[]> {
     },
   })
   console.log('Todos:', response.data)
-  return response.data.items
+  return response.data.todos
 }
 
 export async function createTodo(
@@ -27,7 +26,7 @@ export async function createTodo(
       'Authorization': `Bearer ${idToken}`
     }
   })
-  return response.data.item
+  return response.data.newTodoItem;
 }
 
 export async function patchTodo(
@@ -47,12 +46,13 @@ export async function deleteTodo(
   idToken: string,
   todoId: string
 ): Promise<void> {
-  await Axios.delete(`${apiEndpoint}/todos/${todoId}`, {
+  const response = await Axios.delete(`${apiEndpoint}/todos/${todoId}`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
     }
   })
+  console.log(response.data.message);
 }
 
 export async function getUploadUrl(

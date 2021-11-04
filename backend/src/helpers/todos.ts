@@ -66,11 +66,12 @@ export async function updateTodo(
 
 /**
  * Delete a todo item
- * @param todoId 
+ * @param todoId
+ * @param userId
  * @returns 
  */
-export async function deleteTodo(todoId: string): Promise<string> {
-  return await todoAccess.deleteTodo(todoId)
+export async function deleteTodo(todoId: string, userId: string): Promise<string> {
+  return await todoAccess.deleteTodo(todoId, userId)
 }
 
 /**

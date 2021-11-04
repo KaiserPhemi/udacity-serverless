@@ -99,14 +99,16 @@ export class TodosAccess {
 
   /**
    * Deletes a todo
-   * @param todoId 
+   * @param todoId
+   * @param userId
    * @returns 
    */
-  async deleteTodo(todoId: string): Promise<string> {
+  async deleteTodo(todoId: string, userId: string): Promise<string> {
     await this.docClient.delete({
       TableName: this.todosTable,
       Key: {
-        todoId
+        todoId,
+        userId
       }
     }).promise();
     return todoId;
