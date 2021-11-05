@@ -40,6 +40,7 @@ export async function patchTodo(
       'Authorization': `Bearer ${idToken}`
     }
   })
+  console.log('Todo Updated');
 }
 
 export async function deleteTodo(

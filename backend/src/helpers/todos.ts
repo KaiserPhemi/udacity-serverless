@@ -59,9 +59,10 @@ export async function createTodo(
  */
 export async function updateTodo(
   todoId: string,
+  userId: string,
   updateTodoRequest: UpdateTodoRequest,
 ): Promise<TodoUpdate> {
-  return await todoAccess.updateTodo(todoId, updateTodoRequest);
+  return await todoAccess.updateTodo(todoId, userId, updateTodoRequest);
 }
 
 /**
@@ -78,10 +79,12 @@ export async function deleteTodo(todoId: string, userId: string): Promise<string
  * Sets the attachment URL
  * @param todoId 
  * @param attachmentUrl 
+ * @param userId
  */
 export async function setAttachmentUrl(
   todoId: string,
   attachmentUrl: string,
+  userId: string
 ): Promise<void> {
-  todoAccess.setAttachmentUrl(todoId, attachmentUrl);
+  todoAccess.setAttachmentUrl(todoId, attachmentUrl, userId);
 }

@@ -8,8 +8,9 @@ import { cors, httpErrorHandler } from 'middy/middlewares';
 // utils
 import { presignedUrl } from '../../helpers/attachmentUtils';
 import { setAttachmentUrl } from '../../helpers/todos';
+import { getUserId } from '../utils';
 
-const bucketName = process.env.IMAGES_S3_BUCKET;
+const bucketName = process.env.ATTACHMENT_S3_BUCKET;
 
 // handler
 export const handler = middy(
@@ -17,10 +18,11 @@ export const handler = middy(
     const todoId = event.pathParameters.todoId
     // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
     try {
+      const userId = getUserId(event);
       const imageId = uuid.v4();
       const uploadUrl = presignedUrl(imageId);
       const attachURL = `https://${bucketName}.s3.amazonaws.com/${imageId}`
-      await setAttachmentUrl(todoId, attachURL);
+      await setAttachmentUrl(todoId, attachURL, userId);
 
       return {
         statusCode: 201,

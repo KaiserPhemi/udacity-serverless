@@ -44,6 +44,10 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     this.props.history.push(`/todos/${todoId}/edit`)
   }
 
+  /**
+   * Create todo
+   * @param event
+   */
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
@@ -60,12 +64,15 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     }
   }
 
+  /**
+   * Handles todo deletion
+   * @param todoId
+   */
   onTodoDelete = async (todoId: string) => {
-    console.log('we got here', todoId)
     try {
       await deleteTodo(this.props.auth.getIdToken(), todoId)
       this.setState({
-        todos: this.state.todos.filter(todo => todo.todoId !== todoId)
+        todos: this.state.todos.filter((todo) => todo.todoId !== todoId)
       })
     } catch {
       alert('Todo deletion failed')
@@ -86,13 +93,13 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         })
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Todo update failed')
     }
   }
 
   async componentDidMount() {
     try {
-      const todos:any = await getTodos(this.props.auth.getIdToken())
+      const todos: any = await getTodos(this.props.auth.getIdToken())
       this.setState({
         todos,
         loadingTodos: false

@@ -43,19 +43,15 @@ export class EditTodo extends React.PureComponent<
 
   handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
-
     try {
       if (!this.state.file) {
         alert('File should be selected')
         return
       }
-
       this.setUploadState(UploadState.FetchingPresignedUrl)
       const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.todoId)
-
       this.setUploadState(UploadState.UploadingFile)
       await uploadFile(uploadUrl, this.state.file)
-
       alert('File was uploaded!')
     } catch (e:any) {
       alert('Could not upload a file: ' + e.message)
@@ -74,7 +70,6 @@ export class EditTodo extends React.PureComponent<
     return (
       <div>
         <h1>Upload new image</h1>
-
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
             <label>File</label>
@@ -85,7 +80,6 @@ export class EditTodo extends React.PureComponent<
               onChange={this.handleFileChange}
             />
           </Form.Field>
-
           {this.renderButton()}
         </Form>
       </div>

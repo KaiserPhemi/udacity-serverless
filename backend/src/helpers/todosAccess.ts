@@ -78,21 +78,27 @@ export class TodosAccess {
 
   /**
    * Updates a todo
+   * @param todoId
+   * @param userId
    * @param update 
    * @returns 
    */
-  async updateTodo(todoId: string, update: TodoUpdate): Promise<TodoUpdate> {
+  async updateTodo(todoId: string, userId: string, update: TodoUpdate): Promise<TodoUpdate> {
     await this.docClient.update({
       TableName: this.todosTable,
       Key: {
-        todoId
+        todoId,
+        userId,
       },
-      UpdateExpression: `set name = :n, dueDate= :d, done=:done`,
+      UpdateExpression: `set #name = :n, dueDate= :d, done=:done`,
       ExpressionAttributeValues: {
         ':n': update.name,
         ':d': update.dueDate,
         ':done': update.done
       },
+      ExpressionAttributeNames: {
+        "#name": "name"
+      }
     }).promise();
     return update;
   }
@@ -118,15 +124,17 @@ export class TodosAccess {
    * Sets the attachement url for a todo
    * @param todoId 
    * @param attachmentUrl 
+   * @param userId
    */
   public async setAttachmentUrl(
     todoId: string,
     attachmentUrl: string,
+    userId: string
   ): Promise<void> {
     this.docClient
       .update({
         TableName: this.todosTable,
-        Key: { todoId },
+        Key: { todoId, userId },
         UpdateExpression: 'set attachmentUrl = :attachmentUrl',
         ExpressionAttributeValues: {
           ':attachmentUrl': attachmentUrl,
