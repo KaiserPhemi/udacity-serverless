@@ -49,10 +49,10 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
    * @param event
    */
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
-    // if (this.state.newTodoName.length === 0) {
-    //   alert('Todo name cannot be blank')
-    //   return
-    // }
+    if (this.state.newTodoName.trim().length === 0) {
+      alert('Todo name cannot be blank')
+      return
+    }
     try {
       const dueDate = this.calculateDueDate()
       const newTodo = await createTodo(this.props.auth.getIdToken(), {
